@@ -1,0 +1,67 @@
+/* src/UserProfile.css */
+.user-profile {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    margin-bottom: 20px;
+  }
+  
+  .post-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  input,
+  textarea,
+  select,
+  button {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .error {
+    color: red;
+    margin-top: 10px;
+  }
+  
+  .posts {
+    margin-top: 20px;
+  }
+  
+  .post {
+    padding: 10px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    background-color: #e9ecef;
+    margin-bottom: 10px;
+  }
+  
+  .language {
+    font-style: italic;
+    color: #555;
+  }
+  
+  .code {
+    background-color: #282c34;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+  }
+  

@@ -1,0 +1,24 @@
+/* YourContent.css */
+.your-content {
+    padding: 20px;
+  }
+  
+  .content-list {
+    margin-top: 20px;
+  }
+  
+  .content-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .content-item h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .content-item p {
+    margin: 5px 0;
+  }
+  
