@@ -114,7 +114,7 @@ const Login = () => {
 
     // Attempt login
     try {
-      const response = await axios.post(`http://localhost:4000/login`, formData);
+      const response = await axios.post(`http://localhost:4000/api/auth/login`, formData);
       console.log(response.data);
       navigate('/userDashboard', { state: { email: formData.email } }); // Pass email as state
     } catch (error) {
@@ -160,9 +160,7 @@ const Login = () => {
             </a>
           </p>
           <p>
-            <a href="/forgot-password">
-              <b>Forgot Password?</b>
-            </a>
+            
           </p>
         </div>
       </div>

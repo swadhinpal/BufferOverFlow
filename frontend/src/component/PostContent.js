@@ -1,47 +1,73 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom'; // Import useLocation and useNavigate
-import './PostContent.css'; // Import the CSS file for styling
+import { useLocation, useNavigate } from 'react-router-dom';
+import './PostContent.css';
 
 const PostContent = () => {
-  const location = useLocation(); // Access the location object
-  const navigate = useNavigate(); // Use useNavigate for navigation
-  const { email } = location.state || {}; // Destructure the email from location state
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { email } = location.state || {};
 
   const [question, setQuestion] = useState('');
   const [code, setCode] = useState('');
-  const [language, setLanguage] = useState('C'); // State to store selected language
+  const [language, setLanguage] = useState('C');
+  const [file, setFile] = useState(null); // State to store uploaded file
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validation checks
-    if (question.trim() === '' && code.trim() === '') {
-      setError('You must enter either a question or code.');
+    if (!file && question.trim() === '' && code.trim() === '') {
+      setError('You must enter text, upload a file, or paste code.');
       return;
     }
 
-    if (code.trim() !== '' && question.trim() === '') {
-      setError('You cannot post only code. Please enter a question as well.');
-      return;
+    if (file) {
+      // If a file is uploaded, ensure code and language are empty
+      if (code.trim() !== '' || question.trim() === '') {
+        setError('If you upload a file, you cannot paste code, and you must enter text.');
+        return;
+      }
+    }
+
+    if (code.trim() !== '') {
+      // If code is pasted, ensure no file is uploaded
+      if (file) {
+        setError('You cannot upload a file while pasting code.');
+        return;
+      }
+
+      if (question.trim() === '') {
+        setError('If you paste code, you must enter text as well.');
+        return;
+      }
     }
 
     // Prepare data to send to backend
     const uploadData = {
-      email, // Use the email from navigation state
-      text: question.trim(), // Assuming the question is the text you want to upload
-      code: code.trim(),
-      language, // Send selected language to the backend
+      email,
+      text: question, // Keep original whitespace and newlines
+      code: code,     // Keep original whitespace and newlines
+      language,
+      filename: file ? file.name : null, // Set filename if file is uploaded
     };
 
     // Send the data to the backend
     try {
-      const response = await fetch('http://localhost:4000/upload', {
+      const token = localStorage.getItem('token');
+
+      const formData = new FormData();
+      formData.append('data', JSON.stringify(uploadData)); // Append metadata
+      if (file) {
+        formData.append('file', file); // Append the file if it exists
+      }
+
+      const response = await fetch('http://localhost:4000/api/upload', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Include the token in the headers
         },
-        body: JSON.stringify(uploadData),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -51,17 +77,19 @@ const PostContent = () => {
       const data = await response.json();
       console.log('Data uploaded successfully:', data);
 
-      // Redirect to the UserDashboard page after successful post
-      navigate('/userDashboard', { state: { email } }); // Pass email to the UserDashboard
+      navigate('/userDashboard', { state: { email } });
     } catch (uploadError) {
       console.error('Error uploading data:', uploadError);
       setError('Error uploading data. Please try again.');
     }
   };
 
-  // Handle navigation back to the User Dashboard
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]); // Get the uploaded file
+  };
+
   const handleBackToDashboard = () => {
-    navigate('/userDashboard', { state: { email } }); // Pass email to the UserDashboard
+    navigate('/userDashboard', { state: { email } });
   };
 
   return (
@@ -69,8 +97,8 @@ const PostContent = () => {
       <h2>Post Content</h2>
       <button onClick={handleBackToDashboard} className="back-button">Back to Dashboard</button>
       <form onSubmit={handleSubmit} className="post-form">
-        <input
-          type="text"
+        {/* Change input to textarea for multi-line question input */}
+        <textarea
           placeholder="Ask your question..."
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
@@ -80,12 +108,25 @@ const PostContent = () => {
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />
-        <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+        {/* Conditional rendering for file input or filename display */}
+        {file ? (
+          <div className="file-info">
+            <span>Uploaded File: {file.name}</span>
+            <button type="button" onClick={() => setFile(null)}>Remove</button> {/* Option to remove the file */}
+          </div>
+        ) : (
+          <input
+            type="file"
+            accept=".c,.cpp,.cs,.java,.py,.js" // Accept specific file types
+            onChange={handleFileChange}
+          />
+        )}
+        <select value={language} onChange={(e) => setLanguage(e.target.value)} disabled={file}>
           <option value="C">C</option>
           <option value="C++">C++</option>
           <option value="C#">C#</option>
           <option value="Java">Java</option>
-          <option value="Others">Others</option>
+          <option value="Python">Python</option>
         </select>
         <button type="submit">Post</button>
         {error && <p className="error">{error}</p>}

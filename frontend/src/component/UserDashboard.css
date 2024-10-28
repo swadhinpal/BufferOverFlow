@@ -1,35 +1,26 @@
 .user-dashboard {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-  }
-  
-  .user-dashboard h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  nav {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  nav button {
-    margin: 10px 0;
-    padding: 10px 20px;
-    border-radius: 5px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  nav button:hover {
-    background-color: #0056b3;
-  }
-  
+  margin: 20px; /* Adjust as needed */
+}
+
+.content-list {
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  align-items: flex-start; /* Align items to the left */
+}
+
+.content-item {
+  margin-bottom: 20px; /* Space between content items */
+  width: 100%; /* Take full width */
+}
+
+h3, h4 {
+  margin: 0; /* Remove default margin */
+}
+
+pre {
+  background: #f6f8fa; /* Light background for code blocks */
+  padding: 10px; /* Padding for better visibility */
+  border-radius: 5px; /* Rounded corners */
+  overflow-x: auto; /* Enable horizontal scroll if needed */
+  text-align: left; /* Align code to the left */
+}

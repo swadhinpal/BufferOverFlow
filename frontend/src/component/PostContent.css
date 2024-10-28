@@ -42,4 +42,24 @@
     color: red;
     text-align: center;
   }
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+  }
+  
+  .file-info span {
+    margin-right: 10px;
+  }
+  
+  .file-info button {
+    background-color: #ff4d4d; /* Example color for remove button */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
   

@@ -1,0 +1,22 @@
+.notification-page {
+    padding: 20px;
+  }
+  
+  .notification-list {
+    margin-top: 20px;
+  }
+  
+  .notification-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .notification-item h3 {
+    margin: 0;
+  }
+  
+  .notification-item button {
+    margin-top: 5px;
+  }
+  

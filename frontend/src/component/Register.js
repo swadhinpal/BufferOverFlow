@@ -39,7 +39,7 @@ function Register() {
     // If there are no validation errors, submit the form
     if (Object.keys(validationErrors).length === 0) {
       try {
-        const response = await axios.post(`http://localhost:4000/register`, formData);
+        const response = await axios.post(`http://localhost:4000/api/auth/register`, formData);
         console.log(response.data);
         // Redirect to login page after successful registration
         navigate('/login');
