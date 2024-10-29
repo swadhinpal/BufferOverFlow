@@ -1,4 +1,3 @@
-// Notifications.js
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Notifications.css';
@@ -23,30 +22,31 @@ const Notifications = () => {
     fetchNotifications();
   }, [email]);
 
-  // Notifications.js
-const handleNotificationClick = async (postId) => {
-  // Call the API to mark the notification as clicked and get post content
-  const response = await fetch('http://localhost:4000/api/notificationClicked', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, postId }),
-  });
+  const handleNotificationClick = async (postId) => {
+    const response = await fetch('http://localhost:4000/api/notificationClicked', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, postId }),
+    });
 
-  if (response.ok) {
-    const { content, code } = await response.json(); // Get content and code from the response
+    if (response.ok) {
+      const { content, code } = await response.json();
+      navigate('/postVisited', { state: { postId, email, content, code } });
+    } else {
+      console.error('Error fetching post content:', await response.json());
+    }
+  };
 
-    // Navigate to the postVisited page with the post content, code, and email
-    navigate('/postVisited', { state: { postId, email, content, code } });
-  } else {
-    console.error('Error fetching post content:', await response.json());
-  }
-};
+  const handleBackToDashboard = () => {
+    navigate('/userDashboard', { state: { email } }); // Change this path according to your routing
+  };
 
   return (
     <div className="notifications">
       <h2>Notifications</h2>
+      <button className="back-button" onClick={handleBackToDashboard}>Back to Dashboard</button>
       {notifications.length > 0 ? (
         notifications.map((notif, index) => (
           <div key={index} className="notification-item" onClick={() => handleNotificationClick(notif.postId)}>
