@@ -19,7 +19,7 @@ function Home() {
                 <div className="left-section">
                     <h2>Every developer has a tab open to BufferOverflow.</h2> {/* Specific heading */}
                     <p>For over 15 years we’ve been the Q&A platform of choice that millions of people visit every month to ask questions, learn, and share technical knowledge.</p> {/* Specific paragraph */}
-                    <Link to='/Register'> {/* Wrap the button with Link to navigate */}
+                    <Link to='/signup'> {/* Wrap the button with Link to navigate */}
                         <button className="signup-button">Sign Up</button>
                     </Link>
                 </div>

@@ -62,7 +62,7 @@ const PostContent = () => {
         formData.append('file', file); // Append the file if it exists
       }
 
-      const response = await fetch('http://localhost:4000/api/upload', {
+      const response = await fetch('http://localhost:4000/post', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`, // Include the token in the headers

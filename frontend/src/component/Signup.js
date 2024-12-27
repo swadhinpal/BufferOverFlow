@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './register.css';
+import './signup.css';
 
-function Register() {
+function Signup() {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -39,10 +39,10 @@ function Register() {
     // If there are no validation errors, submit the form
     if (Object.keys(validationErrors).length === 0) {
       try {
-        const response = await axios.post(`http://localhost:4000/api/auth/register`, formData);
+        const response = await axios.post(`http://localhost:4000/signup`, formData);
         console.log(response.data);
         // Redirect to login page after successful registration
-        navigate('/login');
+        navigate('/signin');
       } catch (error) {
         console.error('Error registering user:', error.response);
         if (error.response && error.response.status === 400) {
@@ -67,19 +67,19 @@ function Register() {
         {/* Close Button Positioned Separately */}
         <span className="close-button" onClick={handleClose}>✖</span>
         
-          <h2>Registration</h2>
+          <h2>Sign Up Here</h2>
           <form onSubmit={handleSubmit}>
             <input type="email" name="email" placeholder="Email" onChange={handleChange} /> <br />
             {errors.email && <p className="error">{errors.email}</p>}
             <input type="password" name="password" placeholder="Password" onChange={handleChange} /> <br />
-            <button type="submit">Register</button> <br />
+            <button type="submit">Signup</button> <br />
             {backendError && <p className="error">{backendError}</p>}
           </form>
-          <p>Already have an account? <a href="/login"><b>Login</b></a></p>
+          <p>Already have an account? <a href="/signin"><b>Signin</b></a></p>
         </div>
       </div>
     </div>
   );
 }
 
-export default Register;
+export default Signup;

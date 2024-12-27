@@ -8,7 +8,7 @@ function Nav() {
     return (
         <nav>
             <div className="nav-links">
-                <Link to='/Login' className="nav-link">Login</Link> {/* Only showing the Login link */}
+                <Link to='/signin' className="nav-link">Signin</Link> {/* Only showing the Login link */}
             </div>
         </nav>
     );

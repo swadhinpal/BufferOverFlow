@@ -30,7 +30,7 @@ const PostVisited = () => {
       )}
 
       <button onClick={() => navigate('/notifications', { state: { email } })}>Back to Notifications</button>
-      <button onClick={() => navigate('/dashboard', { state: { email } })}>Back to Dashboard</button>
+      <button onClick={() => navigate('/userDashboard', { state: { email } })}>Back to Dashboard</button>
     </div>
   );
 };

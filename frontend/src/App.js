@@ -1,12 +1,12 @@
 import './App.css';
 import Nav from './component/nav';
 import Home from './component/home';
-import Register from './component/Register';
-import UserProfile from './component/UserProfile';
-import Login from './component/Login';
+import Signup from './component/Signup';
+//import UserProfile from './component/UserProfile1';
+import Signin from './component/Signin';
 import UserDashboard from './component/UserDashboard';
 import PostContent from './component/PostContent';
-import YourContent from './component/YourContent';
+//import YourContent from './component/YourContent1';
 import Notifications from './component/Notifications';
 import PostVisited from './component/PostVisited';
 
@@ -21,12 +21,10 @@ function App() {
       
        <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/Register" element={<Register />} />
-        <Route path="/Login" element={<Login />} />
-        <Route path="/userprofile" element={<UserProfile />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/signin" element={<Signin />} />
         <Route path="/userDashboard" element={<UserDashboard />} />
         <Route path="/postContent" element={<PostContent/>} />
-        <Route path="/yourContent" element={<YourContent />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/postVisited" element={<PostVisited />} />
        </Routes>
