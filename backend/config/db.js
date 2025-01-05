@@ -1,63 +1,82 @@
-const mysql = require('mysql');
+const { MongoClient } = require('mongodb');
 
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
+const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+const dbName = process.env.DB_NAME || 'ufferOverflow';
 
-connection.connect((err) => {
-  if (err) {
-    console.error('Error connecting to MySQL database:', err);
+let db;
+
+// Establish a connection to MongoDB
+MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then((client) => {
+    console.log('Connected to MongoDB');
+    db = client.db(dbName);
+    createCollections();
+  })
+  .catch((err) => {
+    console.error('Error connecting to MongoDB:', err);
     process.exit(1);
-  }
-  console.log('Connected to MySQL database');
-  createTables();
-});
-
-// Create required tables if they don't exist
-function createTables() {
-  const usersTable = `
-    CREATE TABLE IF NOT EXISTS users1 (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      email VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL
-    );
-  `;
-
-  const contentTable = `
-    CREATE TABLE IF NOT EXISTS content (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT,
-      text TEXT,
-      filename VARCHAR(255),
-      time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users1(id) ON DELETE CASCADE
-    );
-  `;
-
-  const notificationTable = `
-  CREATE TABLE IF NOT EXISTS notifications (
-    user_id INT,
-    post_ids VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES users1(id) ON DELETE CASCADE
-  );
-`;
-
-connection.query(notificationTable, (err) => {
-  if (err) console.error('Error creating notifications table:', err);
-  else console.log('Notifications table ready');
-});
-  connection.query(usersTable, (err) => {
-    if (err) console.error('Error creating users table:', err);
-    else console.log('Users table ready');
   });
 
-  connection.query(contentTable, (err) => {
-    if (err) console.error('Error creating content table:', err);
-    else console.log('Content table ready');
+// Create required collections if they don't exist
+function createCollections() {
+  const collections = [
+    {
+      name: 'users1',
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['email', 'password'],
+          properties: {
+            email: { bsonType: 'string', unique: true, description: 'must be a unique string and is required' },
+            password: { bsonType: 'string', description: 'must be a string and is required' },
+          },
+        },
+      },
+    },
+    {
+      name: 'content',
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['user_id', 'text'],
+          properties: {
+            user_id: { bsonType: 'objectId', description: 'must be an ObjectId and is required' },
+            text: { bsonType: 'string', description: 'must be a string and is required' },
+            filename: { bsonType: 'string', description: 'must be a string' },
+            time: { bsonType: 'date', description: 'must be a date' },
+          },
+        },
+      },
+    },
+    {
+      name: 'notifications',
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['user_id'],
+          properties: {
+            user_id: { bsonType: 'objectId', description: 'must be an ObjectId and is required' },
+            post_ids: { bsonType: 'array', items: { bsonType: 'objectId' }, description: 'must be an array of ObjectIds' },
+          },
+        },
+      },
+    },
+  ];
+
+  collections.forEach(({ name, validator }) => {
+    db.listCollections({ name })
+      .next((err, collinfo) => {
+        if (!collinfo) {
+          db.createCollection(name, { validator })
+            .then(() => console.log(`${name} collection created`))
+            .catch((err) => console.error(`Error creating ${name} collection:`, err));
+        } else {
+          console.log(`${name} collection already exists`);
+        }
+      });
   });
 }
 
-module.exports = connection;
+module.exports = {
+  getDb: () => db, // Export a function to retrieve the database instance
+};

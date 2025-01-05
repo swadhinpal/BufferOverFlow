@@ -1,47 +1,63 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const connection = require('../config/db');
+const { MongoClient } = require('mongodb'); // MongoDB client
+require('dotenv').config();
 
 const router = express.Router();
 
+// MongoDB connection setup
+const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+const dbName = 'bufferOverflow'; // Replace with your database name
+
+let db;
+
+// Connect to MongoDB
+MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(client => {
+    db = client.db(dbName);
+    console.log('Connected to MongoDB');
+  })
+  .catch(err => {
+    console.error('Error connecting to MongoDB:', err);
+  });
 
 router.post('/signup', async (req, res) => {
   const { email, password } = req.body;
 
-  // Check if the email already exists
-  const checkEmailQuery = 'SELECT * FROM users1 WHERE email = ?';
-  connection.query(checkEmailQuery, [email], async (checkErr, results) => {
-    if (checkErr) {
-      return res.status(500).json({ error: 'Database query error', err: checkErr });
-    }
+  try {
+    const usersCollection = db.collection('users'); // Replace 'users' with your collection name
+    const notificationsCollection = db.collection('notifications'); // Replace 'notifications' with your collection name
 
-    // If user exists, return an error message
-    if (results.length > 0) {
+    // Check if the email already exists
+    const existingUser = await usersCollection.findOne({ email });
+    if (existingUser) {
       return res.status(400).json({ error: 'Email already registered' });
     }
 
     // If user does not exist, proceed to register
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const insertUserQuery = 'INSERT INTO users1 (email, password) VALUES (?, ?)';
-    connection.query(insertUserQuery, [email, hashedPassword], (insertErr, insertResults) => {
-      if (insertErr) {
-        return res.status(500).json({ error: 'User registration failed', err: insertErr });
-      }
-
-      const userId = insertResults.insertId; // Get the ID of the newly registered user
-
-      // Insert into the notifications table for the newly registered user
-      const notificationQuery = 'INSERT INTO notifications (user_id) VALUES (?)';
-      connection.query(notificationQuery, [userId], (notificationErr) => {
-        if (notificationErr) {
-          return res.status(500).json({ error: 'Failed to create notification entry', notificationErr });
-        }
-
-        res.status(200).json({ message: 'User registered successfully' });
-      });
+    // Insert the new user into the users collection
+    const userResult = await usersCollection.insertOne({
+      email,
+      password: hashedPassword,
+      createdAt: new Date(),
     });
-  });
+
+    const userId = userResult.insertedId; // Get the ID of the newly registered user
+
+    // Insert a notification entry for the newly registered user
+    await notificationsCollection.insertOne({
+      userId,
+      notifications: [],
+      createdAt: new Date(),
+    });
+
+    res.status(200).json({ message: 'User registered successfully' });
+  } catch (err) {
+    console.error('Error during user registration:', err);
+    res.status(500).json({ error: 'User registration failed', err });
+  }
 });
 
 module.exports = router;

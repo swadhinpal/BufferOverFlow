@@ -8,6 +8,14 @@ const minioClient = new Minio.Client({
   secretKey: 'password',
 });
 
+/*const minioClient = new Minio.Client({
+  endPoint: process.env.MINIO_HOST, // Hostname from the .env file (Docker service name)
+  port: parseInt(process.env.MINIO_PORT, 10), // Port number for MinIO
+  useSSL: process.env.MINIO_USE_SSL === 'true', // Convert string to boolean
+  accessKey: process.env.MINIO_ACCESS_KEY,
+  secretKey: process.env.MINIO_SECRET_KEY,
+});*/
+
 const bucketName = 'codestore';
 
 // Create bucket if it doesn't exist
